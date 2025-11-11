@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Box, Toolbar } from "@mui/material";
+import { Box } from "@mui/material";
 import AppHeader from "./AppHeader";
 import SideNav, { drawerWidth } from "./SideNav";
 
