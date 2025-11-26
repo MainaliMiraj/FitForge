@@ -1,7 +1,7 @@
 // Task type definitions for the Task Management App
 
-export type TaskPriority = 'Low' | 'Medium' | 'High';
-export type TaskStatus = 'Todo' | 'In Progress' | 'Done';
+export type TaskPriority = "Low" | "Medium" | "High";
+export type TaskStatus = "Todo" | "In Progress" | "Done";
 
 export interface Task {
   id: string;
@@ -29,6 +29,6 @@ export interface TaskFilters {
 }
 
 export interface TaskSortOptions {
-  sortBy: 'dueDate' | 'priority' | 'createdAt';
-  sortOrder: 'asc' | 'desc';
+  sortBy: "dueDate" | "priority" | "createdAt";
+  sortOrder: "asc" | "desc";
 }

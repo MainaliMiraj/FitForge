@@ -1,174 +1,89 @@
 "use client";
-
-import { useState, useMemo } from "react";
+import Link from "next/link";
+import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { useTasks } from "@/context/TaskContext";
-import { TaskFilters, TaskSortOptions } from "@/types/task";
-import TaskCard from "@/components/TaskCard";
-import FilterBar from "@/components/FilterBar";
-import SearchBar from "@/components/SearchBar";
-import SortControls from "@/components/SortControls";
 
-export default function Dashboard() {
+import {
+  FaTasks,
+  FaChartLine,
+  FaBell,
+  FaCheckCircle,
+  FaArrowRight,
+} from "react-icons/fa";
+
+export default function LandingPage() {
+  const { data: session } = useSession();
   const router = useRouter();
-  const {
-    tasks,
-    // isLoading,
-    deleteTask,
-    changeTaskStatus,
-    filterTasks,
-    sortTasks,
-  } = useTasks();
 
-  // State for filters and sorting
-  const [filters, setFilters] = useState<TaskFilters>({});
-  const [sortOptions, setSortOptions] = useState<TaskSortOptions>({
-    sortBy: "dueDate",
-    sortOrder: "asc",
-  });
-  const [searchTerm, setSearchTerm] = useState("");
-  const filteredAndSortedTasks = useMemo(() => {
-    const filtered = filterTasks({ ...filters, searchTerm });
-    return sortTasks(filtered, sortOptions);
-  }, [tasks, filters, searchTerm, sortOptions, filterTasks, sortTasks]);
-
-  const handleStatusFilterChange = (
-    status?: "Todo" | "In Progress" | "Done"
-  ) => {
-    setFilters((prev) => ({ ...prev, status }));
-  };
-
-  const handlePriorityFilterChange = (priority?: "Low" | "Medium" | "High") => {
-    setFilters((prev) => ({ ...prev, priority }));
-  };
-
-  const handleClearFilters = () => {
-    setFilters({});
-    setSearchTerm("");
-  };
-
-  const handleDeleteTask = (id: string) => {
-    deleteTask(id);
-  };
-
-  const handleStatusChange = (id: string) => {
-    changeTaskStatus(id);
-  };
-
-  const handleAddTask = () => {
-    router.push("/add");
-  };
-
-  const hasActiveFilters = filters.status || filters.priority || searchTerm;
-
-  // if (isLoading) {
-  //   return (
-  //     <div className="flex justify-center items-center h-64">
-  //       <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
-  //     </div>
-  //   );
-  // }
+  // If logged in → Redirect to Dashboard
+  if (session) {
+    router.push("/dashboard");
+    return null;
+  }
 
   return (
-    <div className="space-y-6">
-      {/* Page Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div>
-          <h1
-            className="text-3xl font-bold text-gray-900"
-            data-testid="dashboard-title"
-          >
-            Task Dashboard
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50">
+      <header className="absolute top-0 left-0 right-0 z-10">
+        <nav className="max-w-7xl mx-auto px-6 py-6 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-lg flex items-center justify-center">
+              <FaTasks className="text-white text-xl" />
+            </div>
+            <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+              TaskFlow
+            </span>
+          </div>
+          <div>
+            <Link
+              href="/login"
+              className="text-black  font-medium transition border-2 hover:border-indigo-700  px-8 py-3 hover:text-indigo-700"
+            >
+              Sign In
+            </Link>
+            <Link
+              href="/register"
+              className=" font-medium ml-8 bg-indigo-600 py-3 px-8 text-white hover:bg-indigo-700 "
+            >
+              Sign Up
+            </Link>
+          </div>
+        </nav>
+      </header>
+      <section className="max-w-7xl mx-auto px-6 pt-32 pb-20">
+        <div className="text-center max-w-4xl mx-auto">
+          {/* Badge */}
+          <div className="inline-flex items-center gap-2 bg-blue-100 text-blue-700 px-4 py-2 rounded-full text-sm font-medium mb-6">
+            <FaCheckCircle />
+            <span>Helps with your daily Tasks Management.</span>
+          </div>
+          <h1 className="text-6xl md:text-7xl font-bold text-gray-900 mb-6 leading-tight">
+            Manage Your Tasks
+            <br />
+            <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+              Like a Pro
+            </span>
           </h1>
-          <p className="text-gray-600 mt-1">
-            Manage your tasks efficiently with filters and sorting
+          <p className="text-xl text-gray-600 max-w-2xl mx-auto mb-10 leading-relaxed">
+            A simple and smart task manager to help you stay organised,
+            productive and focused. Manage your tasks anywhere, anytime.
           </p>
-        </div>
-      </div>
-
-      {/* Search and Filters */}
-      <div className="space-y-4">
-        <div className="flex flex-col sm:flex-row gap-4">
-          <div className="flex-1">
-            <SearchBar
-              searchTerm={searchTerm}
-              onSearchChange={setSearchTerm}
-              placeholder="Search by title or description..."
-            />
-          </div>
-          <div className="sm:w-64">
-            <SortControls
-              sortOptions={sortOptions}
-              onSortChange={setSortOptions}
-            />
-          </div>
-        </div>
-
-        <FilterBar
-          statusFilter={filters.status}
-          priorityFilter={filters.priority}
-          onStatusChange={handleStatusFilterChange}
-          onPriorityChange={handlePriorityFilterChange}
-          onClearFilters={handleClearFilters}
-        />
-      </div>
-
-      {/* Results Summary */}
-      <div className="flex justify-between items-center">
-        <p className="text-sm text-gray-600">
-          Showing {filteredAndSortedTasks.length} of {tasks.length} tasks
-          {hasActiveFilters && " (filtered)"}
-        </p>
-      </div>
-
-      {/* Tasks Grid */}
-      {filteredAndSortedTasks.length === 0 ? (
-        <div className="text-center py-12">
-          <div className="text-gray-400 mb-4">
-            <svg
-              className="mx-auto h-12 w-12"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+            <Link
+              href="/register"
+              className="group bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-8 py-4 rounded-xl font-semibold hover:shadow-xl hover:shadow-blue-500/50 transition-all duration-300 transform hover:scale-105 flex items-center gap-2"
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
-              />
-            </svg>
-          </div>
-          <h3 className="text-lg font-medium text-gray-900 mb-2">
-            No tasks found
-          </h3>
-          <p className="text-gray-600 mb-4">
-            {hasActiveFilters
-              ? "Try adjusting your filters or search terms"
-              : "Get started by creating your first task"}
-          </p>
-          {!hasActiveFilters && (
-            <button
-              onClick={handleAddTask}
-              className="btn-primary"
-              data-testid="create-first-task"
+              Get Started Free
+              <FaArrowRight className="group-hover:translate-x-1 transition-transform" />
+            </Link>
+            <Link
+              href="/login"
+              className="bg-white text-gray-900 px-8 py-4 rounded-xl font-semibold border-2 border-gray-200 hover:border-blue-600 hover:text-blue-600 transition-all duration-300"
             >
-              Create Your First Task
-            </button>
-          )}
+              Sign In
+            </Link>
+          </div>
         </div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredAndSortedTasks.map((task) => (
-            <TaskCard
-              key={task.id}
-              task={task}
-              onDelete={handleDeleteTask}
-              onStatusChange={handleStatusChange}
-            />
-          ))}
-        </div>
-      )}
+      </section>
     </div>
   );
 }

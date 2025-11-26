@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import { Barlow } from "next/font/google";
 import { TaskProvider } from "@/context/TaskContext";
+import { Providers } from "./providers";
 
 import "./globals.css";
-import Header from "@/components/Header";
 
 const barlow = Barlow({
   subsets: ["latin"],
@@ -17,7 +17,11 @@ export const metadata: Metadata = {
     "A clean, modern task management application for testing practice",
   keywords: "task management, productivity, testing, automation",
   authors: [{ name: "Task Management App" }],
-  viewport: "width=device-width, initial-scale=1",
+};
+
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
 };
 
 export default function RootLayout({
@@ -30,9 +34,8 @@ export default function RootLayout({
       <TaskProvider>
         <body className={barlow.className}>
           <div className="min-h-screen bg-gray-50">
-            <Header />
             <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-              {children}
+              <Providers>{children}</Providers>
             </main>
           </div>
         </body>
